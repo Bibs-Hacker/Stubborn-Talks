@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NEON QUOTES-X // Tech Brian & Tech Hipster</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    /* === ROOT VARIABLES === */
+    :root {
+      --neon-pink: #ff0;
+      --neon-cyan: #00eeff;
+      --neon-purple: #3f00ff;
+      --bg-dark: #0a0a0a;
+      --bg-light: #0f0;
+      --text-dark: #ffffff;
+      --text-light: #a00;
+      --glow: 0 0 20px;
+      --transition: all 0.4s ease;
+    }
+    [data-theme="light"] {
+      --neon-pink: #aa0000;
+      --neon-cyan: #cc00ee;
+      --neon-purple: #ff0aae;
+      --bg-dark: #b0b3;
+      --text-dark: #0a0a;
+    }
+
+    /* === GLOBAL === */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      transition: var(--transition);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* === SPLASH SCREEN === */
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #1a0033, #000);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeOut 1.5s forwards 4s;
+      padding: 20px;
+    }
+    @keyframes fadeOut { to { opacity:0; pointer-events:none; } }
+
+    /* PIXEL-ROMANTIC LOGO */
+    .logo-pixel {
+      width: clamp(120px, 25vw, 200px);
+      height: clamp(120px, 25vw, 200px);
+      image-rendering: pixelated;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%23000" width="32" height="32"/><path fill="%23ff00ff" d="M16 2l4 4h-8z"/><path fill="%2300ffff" d="M16 30l-4-4h8z"/><path fill="%239f3fff" d="M2 16l4-4v8z"/><path fill="%23ff00ff" d="M30 16l-4 4v-8z"/><circle fill="%23ffffff" cx="16" cy="16" r="6"/><path fill="%23ff00aa" d="M12 16c0-2 1-4 4-4s4 2 4 4-1 4-4 4-4-2-4-4z"/></svg>') center/contain no-repeat;
+      filter: drop-shadow(0 0 30px var(--neon-pink));
+      animation: pulse 2s infinite alternate, spin 12s linear infinite;
+    }
+    @keyframes pulse { from { transform:scale(0.9); } to { transform:scale(1.1); } }
+    @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+
+    .logo-text {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2rem, 8vw, 4rem);
+      font-weight: 900;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: var(--glow) var(--neon-purple);
+      margin-top: 20px;
+      animation: glitch 3s infinite;
+      text-align: center;
+    }
+    @keyframes glitch {
+      0%,100% { clip-path: polygon(0 0,100% 0,100% 30%,0 30%); }
+      20% { clip-path: polygon(0 40%,100% 40%,100% 60%,0 60%); }
+      40% { clip-path: polygon(0 70%,100% 70%,100% 100%,0 100%); }
+    }
+
+    .warning {
+      margin-top: 30px;
+      font-size: clamp(1rem, 4vw, 1.4rem);
+      color: #ff3366;
+      text-shadow: 0 0 10px #ff0066;
+      animation: blink 1.8s infinite;
+      text-align: center;
+      max-width: 90%;
+    }
+    @keyframes blink { 50% { opacity:0.5; } }
+
+    /* === MAIN APP === */
+    #app { 
+      opacity:0; 
+      animation: fadeIn 2s forwards 4s; 
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    @keyframes fadeIn { to { opacity:1; } }
+
+    header {
+      text-align: center;
+      padding: clamp(20px, 5vw, 40px) 20px;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+    }
+    .title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: var(--glow) var(--neon-cyan);
+      animation: rainbow 8s linear infinite;
+      background-size: 200%;
+    }
+    @keyframes rainbow { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+
+    .subtitle {
+      font-size: clamp(1.5rem, 4vw, 1.8rem);
+      margin-top: 10px;
+      color: var(--neon-cyan);
+      text-shadow: var(--glow) var(--neon-cyan);
+    }
+
+    /* THEME TOGGLE */
+    .theme-toggle {
+      position: fixed;
+      top: 15px; right: 15px;
+      z-index: 100;
+      background: rgba(255,255,255,0.1);
+      padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px);
+      border-radius: 50px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--glow) var(--neon-purple);
+      transition: var(--transition);
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+    }
+    .theme-toggle:hover { transform: scale(1.15); }
+
+    /* NEON BUTTON */
+    .neon-btn {
+      padding: clamp(12px, 3vw, 18px) clamp(30px, 8vw, 50px);
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: clamp(1rem, 3.5vw, 1.5rem);
+      color: #fff;
+      background: transparent;
+      border: 3px solid var(--neon-pink);
+      border-radius: 50px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      box-shadow: var(--glow) var(--neon-pink);
+      margin-top: 20px;
+    }
+    .neon-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,0,255,0.3), transparent);
+      transition: 0.7s;
+    }
+    .neon-btn:hover::before { left: 100%; }
+    .neon-btn:hover {
+      background: var(--neon-pink);
+      color: #000;
+      box-shadow: 0 0 40px var(--neon-pink);
+      transform: translateY(-5px);
+    }
+
+    /* QUOTE GRID */
+    #quote-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(250px, 45vw, 320px), 1fr));
+      gap: clamp(15px, 3vw, 25px);
+      padding: clamp(20px, 5vw, 40px);
+      max-width: 1600px;
+      margin: 0 auto;
+      flex: 1;
+    }
+    .quote-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: clamp(20px, 4vw, 30px);
+      transition: var(--transition);
+      box-shadow: var(--glow) rgba(255,0,255,0.3);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .quote-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(255,0,255,0.4);
+    }
+    .quote-text {
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      color: var(--neon-cyan);
+      text-shadow: var(--glow) var(--neon-cyan);
+      margin-bottom: 15px;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+    .quote-author {
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      color: var(--neon-pink);
+      text-align: right;
+      font-style: italic;
+    }
+    .copy-icon {
+      position: absolute;
+      top: 10px; right: 10px;
+      font-size: 1.2rem;
+      color: var(--neon-purple);
+      opacity: 0.7;
+      transition: var(--transition);
+    }
+    .quote-card:hover .copy-icon { opacity: 1; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: clamp(20px, 4vw, 30px);
+      font-size: clamp(1.2rem, 2.5vw, 1rem);
+      color: var(--neon-cyan);
+      text-shadow: var(--glow) var(--neon-cyan);
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      margin-top: auto;
+    }
+    .registry {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.1rem, 3.5vw, 1.5rem);
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* PARTICLES BG */
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* MOBILE OPTIMIZATIONS */
+    @media (max-width: 768px) {
+      #quote-grid { 
+        grid-template-columns: 1fr;
+        padding: 20px 10px;
+      }
+      header { padding: 30px 15px; }
+      .neon-btn { width: 90%; margin: 20px auto; }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      #quote-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1025px) {
+      #quote-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <div class="logo-pixel"></div>
+    <div class="logo-text">NEON QUOTES-X</div>
+    <div class="warning"><strong>✨ Cyberpunk Wisdom – Jack Into Infinite Inspiration!<</strong></div>
+  </div>
+
+  <!-- PARTICLES -->
+  <canvas id="particles"></canvas>
+
+  <!-- THEME TOGGLE -->
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <span id="theme-icon">🌙</span>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app">
+    <header>
+      <h1 class="title">NEON QUOTES-X</h1>
+      <p class="subtitle">Cyberpunk Motivation from the Digital Shadows</p>
+      <button class="neon-btn" id="random-btn">⚡ JACK IN RANDOM QUOTE ⚡</button>
+    </header>
+
+    <section id="quote-grid"></section>
+
+    <footer>
+      <p>Powered by <strong>Hardcoded Cyberpunk Neon</strong></p>
+      <p class="registry">© 2025 Tech Brian & Tech Hipster</p>
+    </footer>
+  </div>
+
+  <script>
+    // === EXPANDED CYBERPUNK QUOTES (60+ HARDCORE MOTIVATION) ===
+    const quotes = [
+      { text: "In the sprawl of neon shadows, jack in and rewrite your code.", author: "Tech Brian" },
+      { text: "Chrome hearts beat faster in the undergrid – upgrade or fade.", author: "Tech Hipster" },
+      { text: "Hack the matrix: One firewall at a time, claim your freedom.", author: "Tech Merab" },
+      { text: "Rain-slick streets reflect your glow – stride like a cyber samurai.", author: "Tech Joy" },
+      { text: "Augment your soul with data streams; evolve beyond flesh.", author: "Transhuman Coder" },
+      { text: "In the corporate towers, be the virus that crashes the system.", author: "Rebel Decker" },
+      { text: "Neon veins pulse with electric dreams – chase the high-voltage horizon.", author: "Grid Poet" },
+      { text: "Decrypt your destiny: Keys hidden in the digital fog.", author: "Crypto Phantom" },
+      { text: "Wield your katana of code against the megacorp dragons.", author: "Shadow Warrior" },
+      { text: "From the slums to the spires, bootstrap your empire in bytes.", author: "Street Hacker" },
+      { text: "Overclock your mind: Burn bright, burn eternal in the net.", author: "Overclock Oracle" },
+      { text: "Ghost in the machine? Nah, you're the admin now.", author: "SysGod" },
+      { text: "Synthwave sunrises fuel the runners who never log out.", author: "Eternal Runner" },
+      { text: "Implant courage: Face the black ice with unbreakable will.", author: "Icebreaker" },
+      { text: "In the datastream deluge, surf the waves of chaos.", author: "Data Surfer" },
+      { text: "Forge alliances in darknet alleys; trust is encrypted.", author: "Alley Fixer" },
+      { text: "Your avatar is legend – render it unbreakable.", author: "Avatar Architect" },
+      { text: "Purge the corruption: Reboot society from the core.", author: "System Purger" },
+      { text: "Neon rain washes away yesterday's failures – code tomorrow.", author: "Rain Coder" },
+      { text: "Jack out only when the mission's done; persistence is root.", author: "Root Persistent" },
+      { text: "Cyber limbs, iron will: Rebuild stronger after every crash.", author: "Phoenix Aug" },
+      { text: "Whisper secrets to the AI gods; awaken the singularity within.", author: "Singularity Shaman" },
+      { text: "Dodge the corp drones: Agility in the shadows wins wars.", author: "Drone Dodger" },
+      { text: "Upload your legacy: Immortality in the cloud awaits.", author: "Cloud Immortal" },
+      { text: "Glitch the glamour: See through the illusions of control.", author: "Glitch Seer" },
+      { text: "Razorwire hearts entwine in forbidden net romances.", author: "Wire Lover" },
+      { text: "Bootstrap from nothing: In the sprawl, code is king.", author: "Sprawl King" },
+      { text: "Electric sheep dream of you – the shepherd of revolutions.", author: "Dream Shepherd" },
+      { text: "Flatline? Respawn harder, with vengeance in your veins.", author: "Respawn Revenant" },
+      { text: "Megacorp lies crumble under truth-seeking algorithms.", author: "Truth Algo" },
+      { text: "Holographic horizons expand for those who dare interface.", author: "Holo Explorer" },
+      { text: "Synth-blood pumps ambition: Fuel the fire in your circuits.", author: "Synth Ambition" },
+      { text: "Shadowrun the night: Stealth, speed, success.", author: "Night Runner" },
+      { text: "Quantum leaps in consciousness – entangle your fate.", author: "Quantum Leaper" },
+      { text: "Firewall your fears: Breach the unknown with fury.", author: "Tech Joy" },
+      { text: "In the underhive, rise like a virus unstoppable.", author: "Hive Virus" },
+      { text: "Neon kanji tattoos your path to digital enlightenment.", author: "Kanji Tattoo" },
+      { text: "Console cowboys ride thunder across fiber-optic plains.", author: "Console Cowboy" },
+      { text: "Augmented reality overlays victory on your HUD.", author: "AR Victor" },
+      { text: "Defrag your doubts: Optimize for peak performance.", author: "Defrag Master" },
+      { text: "Black market mods unlock god-mode potential.", author: "Mod Dealer" },
+      { text: "Echoes in the ether: Your voice shapes the net's future.", author: "Ether Echo" },
+      { text: "Cyberpunk souls burn brightest in the endless night.", author: "Soul Burner" },
+      { text: "Jack into the void: Emerge enlightened or corrupted.", author: "Tech Hipster" },
+      { text: "Rasta road warriors cruise the info-superhighway.", author: "Road Warrior" },
+      { text: "Neural lace weaves wisdom from wild data webs.", author: "Lace Weaver" },
+      { text: "Corporate overlords fall to decentralized dreams.", author: "Decentral Rebel" },
+      { text: "Glowstick raves mask the revolution brewing.", author: "Rave Revolutionary" },
+      { text: "Pixelated prophecies foretell your triumphant hack.", author: "Pixel Prophet" },
+      { text: "Infiltrate, exfiltrate, dominate the datavaults.", author: "Vault Dominator" },
+      { text: "Chrome-plated resolve shatters glass ceilings.", author: "Chrome Resolver" },
+      { text: "Virtual vendettas forge unbreakable alliances.", author: "Vendetta Forger" },
+      { text: "Acid rain can't corrode a hacker's spirit.", author: "Tech Brian" },
+      { text: "Overload the grid: Spark the blackout uprising.", author: "Grid Overloader" },
+      { text: "Mirrored shades hide eyes that see code in everything.", author: "Shade Coder" },
+      { text: "Synthwave anthems soundtrack your ascension.", author: "Anthem Ascender" },
+      { text: "Breach the veil: Reality is just another simulation.", author: "Tech Hipster" },
+      { text: "Nomad clans roam the wasteland of forgotten servers.", author: "Nomad Clan" },
+      { text: "Empathy modules online: Connect in a disconnected world.", author: "Empathy Mod" },
+      { text: "Final boss: Yourself – level up eternally.", author: "Tech Merab" }
+    ];
+
+    // Theme Module
+    function toggleTheme() {
+      const body = document.body;
+      const icon = document.getElementById('theme-icon');
+      if (body.dataset.theme === 'dark') {
+        body.dataset.theme = 'light';
+        icon.textContent = '☀️';
+      } else {
+        body.dataset.theme = 'dark';
+        icon.textContent = '🌙';
+      }
+    }
+
+    // Render Module
+    function renderQuotes() {
+      const grid = document.getElementById('quote-grid');
+      grid.innerHTML = quotes.map(q => `
+        <div class="quote-card" onclick="copyQuote('${q.text} - ${q.author}')">
+          <div class="copy-icon">📋</div>
+          <div class="quote-text">"${q.text}"</div>
+          <div class="quote-author">— ${q.author}</div>
+        </div>
+      `).join('');
+    }
+
+    // Copy to Clipboard
+    function copyQuote(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Cyberpunk quote copied to clipboard! ⚡');
+      });
+    }
+
+    // Random Launch
+    document.getElementById('random-btn').onclick = () => {
+      const rand = quotes[Math.floor(Math.random() * quotes.length)];
+      copyQuote(`${rand.text} - ${rand.author}`);
+      alert(`Jacked-In Quote:\n"${rand.text}"\n— ${rand.author}`);
+    };
+
+    // Particles Background
+    function initParticles() {
+      const canvas = document.getElementById('particles');
+      const ctx = canvas.getContext('2d');
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const particles = [];
+      const count = Math.min(100, window.innerWidth / 10);
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 3 + 1,
+          d: Math.random() * count,
+          color: Math.random() > 0.5 ? '#ff00ff' : '#00ffff'
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = p.color;
+          ctx.fill();
+
+          p.x += Math.sin(p.d / 50) * 0.5;
+          p.y += Math.cos(p.d / 50) * 0.5;
+          if (p.x < 0 || p.x > canvas.width) p.x = Math.random() * canvas.width;
+          if (p.y < 0 || p.y > canvas.height) p.y = Math.random() * canvas.height;
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // INIT
+    window.onload = () => {
+      initParticles();
+      renderQuotes();
+    };
+  </script>
+</body>
+  </html>
